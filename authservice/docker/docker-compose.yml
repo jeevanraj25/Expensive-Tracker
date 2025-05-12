@@ -1,0 +1,69 @@
+services:
+  auth-service:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.spring-boot
+    ports:
+      - "9898:9898"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/authservice
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - mysql
+    networks:
+      - app-network
+
+  kafka:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka
+    ports:
+      - "9093:9092"  # Different port to avoid conflict with user-service
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2M'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka-data:/tmp/kraft-combined-logs
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql-auth-8.3.0
+    restart: always
+    environment:
+      MYSQL_USER: test
+      MYSQL_ROOT_USER: root
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: authservice
+    ports:
+      - '3308:3306'  # Different port to avoid conflict with user-service
+    expose:
+      - '3306'
+    volumes:
+      - mysql-db:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql-db:
+    driver: local
+  kafka-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

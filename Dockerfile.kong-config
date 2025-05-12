@@ -1,0 +1,14 @@
+FROM alpine:3.18
+
+# Install curl and jq
+RUN apk add --no-cache curl jq
+
+# Copy our configuration files
+COPY kong-config.json /kong-config/kong-config.json
+COPY setup-kong.sh /setup-kong.sh
+
+# Make the script executable
+RUN chmod +x /setup-kong.sh
+
+# Set the script as the entrypoint
+ENTRYPOINT ["/setup-kong.sh"]
