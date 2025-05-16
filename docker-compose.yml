@@ -1,4 +1,21 @@
 services:
+  expense-service:
+    build:
+      context: ./service
+      dockerfile: docker/Dockerfile.spring-boot
+    ports:
+      - "9820:9820"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/expensiveservice 
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - mysql
+    networks:
+      - app-network
+
   auth-service:
     build:
       context: ./authservice

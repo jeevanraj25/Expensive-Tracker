@@ -14,4 +14,11 @@ services:
       - name: user-route
         paths:
           - /user/v1
-        strip_path: true
+        strip_path: false
+  - name: expensive-service
+    url:  http://user-service:9820
+    routes:
+      -name: expense-route
+      paths:
+          - /expense/v1
+      strip_path: false     
