@@ -49,6 +49,21 @@ services:
       - mysql
     networks:
       - app-network
+  ds-service:
+    build:
+      context: ./DsService
+      dockerfile: Dockerfile
+    
+    ports:
+     - "8010:8010"
+    environment:
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+      - KAFKA_TOPIC=expense_service
+    depends_on:
+      - kafka
+    networks:
+      - app-network
 
   kafka:
     build:

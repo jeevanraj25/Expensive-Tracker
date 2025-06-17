@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,4 +92,9 @@ public class UserDetailsServiceImpl implements UserDetailsService
                 .email(userInfoDto.getEmail())
                 .phoneNumber(userInfoDto.getPhoneNumber()).build();
     }
+
+    public String getUserByUsername(String userName){
+        return Optional.of(userRepository.findByUsername(userName)).map(UserInfo::getUserId).orElse(null);
+    }
+
 }

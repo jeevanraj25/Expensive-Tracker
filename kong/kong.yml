@@ -1,5 +1,4 @@
 _format_version: "3.0"
-
 services:
   - name: auth-service
     url: http://auth-service:9898
@@ -8,6 +7,7 @@ services:
         paths:
           - /auth/v1
         strip_path: false
+  
   - name: user-service
     url: http://user-service:9810
     routes:
@@ -15,10 +15,19 @@ services:
         paths:
           - /user/v1
         strip_path: false
+  
   - name: expensive-service
-    url:  http://user-service:9820
+    url: http://expense-service:9820 
     routes:
-      -name: expense-route
-      paths:
+      - name: expense-route 
+        paths:
           - /expense/v1
-      strip_path: false     
+        strip_path: false
+  
+  - name: ds-service
+    url: http://ds-service:8010
+    routes:
+      - name: ds-route  
+        paths:
+          - /ds/v1/message
+        strip_path: false
